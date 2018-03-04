@@ -1,13 +1,12 @@
  .main-banner{
     color: #fff;
-    padding: 20px 20px;
+    padding: 10px 5px 5px 5px;
     background: #3E3D4C;
     display: block;
     width: 100%;
   }
 
   .body{
-    background-color: #525252;
     margin: 0;
     padding: 0;
     text-rendering: optimizeLegibility;
@@ -20,9 +19,34 @@
   }
   
   h1 {
+    padding: 0 0 20px 0;
     font-weight: 200;
     font-size: 46px;
     line-height: 1.22;
     letter-spacing: -.01em;
-    margin: 0 0 12px;
+}
+
+h5{
+    padding: 20px 0 0 0;
+    font-weight: 200;
+    font-size: 46px;
+    line-height: 1.22;
+    letter-spacing: -.01em;
+}
+
+.main-wizard{
+  padding: 20px;
+}
+
+.lang-group{
+  padding: 20px 0 0 100px;
+}
+
+.lang-icon{
+  padding: 25px 25px 25px 25px;
+  border: #fff;
+}
+
+.step1-body{
+  padding: 20px 300px 0 100px;
 }
