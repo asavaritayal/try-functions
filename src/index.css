@@ -34,10 +34,6 @@ h5{
     letter-spacing: -.01em;
 }
 
-.main-wizard{
-  padding: 20px;
-}
-
 .lang-group{
   padding: 20px 0 0 100px;
 }
@@ -47,6 +43,18 @@ h5{
   border: #fff;
 }
 
+.step1-icons{
+  padding: 20px 300px 0 30px;
+}
+
 .step1-body{
-  padding: 20px 300px 0 100px;
+  padding: 20px 300px 0 120px;
+}
+
+.step2-body{
+  padding: 20px 300px 0 120px;
+}
+
+.timer{
+  padding: 20px 0 0 0;
 }

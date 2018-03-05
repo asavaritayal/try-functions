@@ -6,10 +6,9 @@ import {Grid, Row, Col} from 'react-bootstrap';
 import {Jumbotron} from 'react-bootstrap';
 import {Button, ButtonGroup} from 'react-bootstrap';
 import Stepper from 'react-stepper-horizontal'; 
-
-class Language extends React.Component {
-
-}
+import brace from 'brace';
+import AceEditor from 'react-ace';
+import ReactCountdownClock from 'react-countdown-clock';
 
 class Banner extends React.Component {
   render(){
@@ -36,28 +35,147 @@ class Wizard extends React.Component {
     super(props);
     this.langs = [
       {
-        "name":"C Sharp",
+        "name":"C# Script",
         "img":"https://developer.fedoraproject.org/static/logo/csharp.png",
-        "text":"Azure Functions supports C# and C# script programming languages. To learn more about using C# to write a Function in the Azure Portal, see the C# script(.csx) developer guide."
+        "text":"Azure Functions supports C# and C# script programming languages. To learn more about using C# to write a Function in the Azure Portal, see the C# script(.csx) developer guide.",
+        "mode":"csharp",
+        "template": `using System.Net;
+
+        public static async Task<HttpResponseMessage> Run(HttpRequestMessage req, TraceWriter log)
+        {
+            log.Info("C# HTTP trigger function processed a request.");
+        
+            // parse query parameter
+            string name = req.GetQueryNameValuePairs()
+                .FirstOrDefault(q => string.Compare(q.Key, "name", true) == 0)
+                .Value;
+        
+            // Get request body
+            dynamic data = await req.Content.ReadAsAsync<object>();
+        
+            // Set name to query string or body data
+            name = name ?? data?.name;
+        
+            return name == null
+                ? req.CreateResponse(HttpStatusCode.BadRequest, "Please pass a name on the query string or in the request body")
+                : req.CreateResponse(HttpStatusCode.OK, "Hello " + name);
+        }
+        `,
       },
       {
         "name":"JavaScript",
         "img":"https://camo.githubusercontent.com/a523d5fd70dcec79fecc4db5d641327749aea13d/68747470733a2f2f63646e2e776f726c64766563746f726c6f676f2e636f6d2f6c6f676f732f6e6f64656a732d69636f6e2e737667",
-        "text":""
+        "text":"The JavaScript experience for Azure Functions makes it easy to export a function for communicating with the runtime and for receiving and sending data via bindings. To learn more about using JavaScript to write a Function , see the JavaScript developer guide.",
+        "mode":"javascript",
+        "template": `module.exports = function (context, req) {
+          context.log('JavaScript HTTP trigger function processed a request.');
+      
+          if (req.query.name || (req.body && req.body.name)) {
+              context.res = {
+                  // status: 200, /* Defaults to 200 */
+                  body: "Hello " + (req.query.name || req.body.name)
+              };
+          }
+          else {
+              context.res = {
+                  status: 400,
+                  body: "Please pass a name on the query string or in the request body"
+              };
+          }
+          context.done();
+      };`,
+      },
+      {
+        "name":"Python",
+        "img":"https://www.python.org/static/opengraph-icon-200x200.png",
+        "text":"(Coming Soon)"
       }
     ];
     this.state = {
-      isActive : null,
+      activeLanguage : 0,
+      currentStep : 1,
     };
+  }
+
+  renderStepTwo(i){
+    if(this.state.currentStep==2){
+      return(
+          <div class="step2-body">
+            <div>
+              <AceEditor
+                theme="kuroir"
+                name="UNIQUE_ID_OF_DIV"
+                editorProps={{$blockScrolling: true}}
+                mode = {this.langs[i].mode}
+                value = {this.langs[i].template}
+                height = '300px'
+                width = '700px'
+              />
+            </div>
+            <div class="timer">
+              <p>
+                Your trial is about to expire!
+                <ReactCountdownClock seconds={3600}
+                            color="#3E3D4B"
+                            alpha={0.9}
+                            size={75}
+                  />
+              </p>
+            </div>
+          </div>
+      );
+    }
+}
+
+  handleClick(i){
+    this.setState({
+      activeLanguage : i,
+      currentStep : 1
+    });
+  }
+
+  handleNext(){
+    this.setState({
+      activeLanguage : this.state.activeLanguage,
+      currentStep : 2,
+    });
+  }
+
+  renderStepOne(){
+    if(this.state.currentStep == 1){
+      return(
+        <div class = "step1-icon">
+          <div class = "lang-group">
+            <ButtonGroup>
+              {this.renderLanguage(0)}
+              {this.renderLanguage(1)}
+              {this.renderLanguage(2)}
+            </ButtonGroup>
+          </div>
+          <div class = "step1-body">
+            <p>{this.langs[this.state.activeLanguage].text}</p>
+            <Button bsStyle="primary" bsSize="large" onClick = {()=> this.handleNext()}>
+              Next
+            </Button>
+          </div>
+        </div>
+      );
+    }
   }
 
   renderLanguage(i){
     return (
-      <button class = "lang-icon">
-        <img width="140" length="140" src={this.langs[i].img}/>
-        <h5>{this.langs[i].name}</h5>
-      </button>
+      <Language
+      value = {this.langs[i]}
+      onClick = {()=> this.handleClick(i)}
+      />
     )
+  }
+
+  renderText(i){
+      return (
+        this.langs[i].text
+      );
   }
   
   render(){
@@ -65,28 +183,27 @@ class Wizard extends React.Component {
       <div>
           <Grid>
             <Row>
-              <Col md = {4}>
-                <Stepper steps={ [{title: 'Pick a language'}, {title: 'See it working'}] } activeStep={0} />
+              <Col md ={3}>
+                <Stepper steps={ [{title: 'Pick a language'}, {title: 'See it working'}] } activeStep={this.state.currentStep - 1} />
               </Col>
             </Row>
           </Grid>
-          <div class = "lang-group">
-            <ButtonGroup>
-              {this.renderLanguage(0)}
-              {this.renderLanguage(1)}
-            </ButtonGroup>
-          </div>
-          <div class = "step1-body">
-              <p> Azure Functions supports C# and C# script programming languages. To learn more about using C# to write a Function in the Azure Portal, see the C# script(.csx) developer guide. </p>
-              <Button bsStyle="primary" bsSize="large">
-                Next
-              </Button>
-          </div>
+          {this.renderStepOne()}
+          {this.renderStepTwo(this.state.activeLanguage)}
       </div>
     );
   }
+
 }
 
+function Language(props) {
+  return(
+    <button class = "lang-icon" onClick={props.onClick}>
+        <img width="140" length="140" src={props.value.img}/>
+        <h5>{props.value.name}</h5>
+    </button>
+  );
+}
 
 class Main extends React.Component {
     render() {
@@ -109,4 +226,5 @@ class Main extends React.Component {
     <Main />,
     document.getElementById('root')
   );
+  
   
